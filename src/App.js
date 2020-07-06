@@ -101,50 +101,53 @@ const App = () => {
       <h1 className="text-info">Mortgage Fun</h1>
 
       <h2 className="text-secondary">Terms</h2>
-      <div className="form-group">
-        <label className="form-label" htmlFor="loan">
-          Loan $
-        </label>
-        <input
-          className="form-control"
-          id="loan"
-          name="loan"
-          type="number"
-          min={LOAN_MIN}
-          max={LOAN_MAX}
-          value={loanAmount}
-          onChange={handleSetLoan}
-        />
-      </div>
-      <div className="form-group">
-        <label className="form-label" htmlFor="years">
-          Years
-        </label>
-        <input
-          className="form-control"
-          id="years"
-          name="years"
-          type="number"
-          min={YEARS_MIN}
-          max={YEARS_MAX}
-          value={years}
-          onChange={handleSetYears}
-        />
-      </div>
-      <div className="form-group">
-        <label className="form-label" htmlFor="interest">
-          Interest Rate %
-        </label>
-        <input
-          id="interest"
-          name="interest"
-          className="form-control"
-          type="number"
-          min={INTEREST_MIN}
-          max={INTEREST_MAX}
-          value={rate}
-          onChange={handleSetRate}
-        />
+      <div className="row">
+        <div className="col">
+          <label className="form-label" htmlFor="loan">
+            Loan Amount
+          </label>
+          <input
+            className="form-control"
+            id="loan"
+            name="loan"
+            type="number"
+            min={LOAN_MIN}
+            max={LOAN_MAX}
+            value={loanAmount}
+            onChange={handleSetLoan}
+          />
+
+        </div>
+        <div className="col">
+          <label className="form-label" htmlFor="years">
+            Loan Term Years
+          </label>
+          <input
+            className="form-control"
+            id="years"
+            name="years"
+            type="number"
+            min={YEARS_MIN}
+            max={YEARS_MAX}
+            value={years}
+            onChange={handleSetYears}
+          />
+        </div>
+        <div className="col">
+          <label className="form-label" htmlFor="interest">
+            Interest Rate
+          </label>
+          <input
+            id="interest"
+            name="interest"
+            className="form-control"
+            type="number"
+            min={INTEREST_MIN}
+            max={INTEREST_MAX}
+            value={rate}
+            onChange={handleSetRate}
+          />
+        </div>
       </div>
       <h2 className="text-secondary">Summary</h2>
 

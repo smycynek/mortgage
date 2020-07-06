@@ -65,7 +65,7 @@ const App = () => {
 
   const { amortization, monthlyPayment, totalInterest } = getLoanStats(loanAmount, rate, years);
   return (
-    <div className="container-fluid border border-secondary">
+    <div className="container-fluid">
       <h1 className="text-info">Mortgage Fun</h1>
       <div className="form-group">
         <h2 className="text-secondary">Terms</h2>

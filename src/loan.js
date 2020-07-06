@@ -22,7 +22,7 @@ const getLoanStats = (principal, rate, years) => {
 
   for (let i = 0; i < totalPayments + 1; i += 1) {
     amortization.push({
-      paymentNumber: i,
+      paymentNumber: `${i}/${totalPayments}`,
       remaining: remainingAt(principal, monthlyRate, i, totalPayments),
     });
   }

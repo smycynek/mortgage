@@ -8,10 +8,18 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import getLoanStats from './loan';
 
+const LOAN_MIN = 40000.0;
+const LOAN_MAX = 999999.0;
+const INTEREST_MIN = 1.0;
+const INTEREST_MAX = 10.0;
+
+const YEARS_MIN = 3;
+const YEARS_MAX = 40;
+
 const App = () => {
-  const [loanAmount, setLoanAmount] = useState(100000);
+  const [loanAmount, setLoanAmount] = useState(400000.0);
   const [years, setYears] = useState(30);
-  const [rate, setRate] = useState(3);
+  const [rate, setRate] = useState(3.1);
 
   function formatCurrency(val) {
     return val.toLocaleString('en-US', {
@@ -27,48 +35,73 @@ const App = () => {
 
   const columnDefs = [
     {
-      headerName: 'Payment #',
+      headerName: 'Bill #',
       field: 'paymentNumber',
-      width: 120,
+      minWidth: 70,
+      maxWidth: 70,
+      flex: 1,
     },
     {
       headerName: 'Principal',
       field: 'principal',
       valueFormatter: currencyFormatter,
-      width: 120,
+      minWidth: 90,
+      maxWidth: 125,
+      flex: 1,
     },
     {
       headerName: 'Interest',
       field: 'interest',
       valueFormatter: currencyFormatter,
-      width: 120,
+      minWidth: 90,
+      maxWidth: 125,
+      flex: 1,
     },
     {
       headerName: 'Remaining',
       field: 'remaining',
       valueFormatter: currencyFormatter,
-      width: 140,
+      minWidth: 100,
+      maxWidth: 220,
+      flex: 4,
     },
   ];
 
   const handleSetLoan = (e) => {
-    setLoanAmount(e.target.value);
+    const val = e.target.value;
+    if (val < 0) {
+      return;
+    }
+    setLoanAmount(val);
   };
 
   const handleSetYears = (e) => {
-    setYears(e.target.value);
+    const val = e.target.value;
+    if (val < 0) {
+      return;
+    }
+    setYears(val);
   };
 
   const handleSetRate = (e) => {
-    setRate(e.target.value);
+    const val = e.target.value;
+    if (val < 0) {
+      return;
+    }
+    setRate(val);
   };
 
-  const { amortization, monthlyPayment, totalInterest } = getLoanStats(loanAmount, rate, years);
+  const { amortization, monthlyPayment, totalInterest } = getLoanStats(
+    loanAmount,
+    rate,
+    years,
+  );
   return (
     <div className="container-fluid">
       <h1 className="text-info">Mortgage Fun</h1>
+
+      <h2 className="text-secondary">Terms</h2>
       <div className="form-group">
-        <h2 className="text-secondary">Terms</h2>
         <label className="form-label" htmlFor="loan">
           Loan $
         </label>
@@ -77,8 +110,8 @@ const App = () => {
           id="loan"
           name="loan"
           type="number"
-          min="100000"
-          max="5000000"
+          min={LOAN_MIN}
+          max={LOAN_MAX}
           value={loanAmount}
           onChange={handleSetLoan}
         />
@@ -92,8 +125,8 @@ const App = () => {
           id="years"
           name="years"
           type="number"
-          min="5"
-          max="40"
+          min={YEARS_MIN}
+          max={YEARS_MAX}
           value={years}
           onChange={handleSetYears}
         />
@@ -107,30 +140,23 @@ const App = () => {
           name="interest"
           className="form-control"
           type="number"
-          min="1"
-          max="10"
+          min={INTEREST_MIN}
+          max={INTEREST_MAX}
           value={rate}
           onChange={handleSetRate}
         />
       </div>
       <h2 className="text-secondary">Summary</h2>
-      <div className="row">
-        <div className="col-sm">
-          <small className="text-muted">
-            Monthly payment:
-            {formatCurrency(monthlyPayment)}
-          </small>
-        </div>
+
+      <div className="text-muted">
+        Monthly payment:
+        {formatCurrency(monthlyPayment)}
+      </div>
+      <div className="text-muted">
+        Total interest:
+        {formatCurrency(totalInterest)}
       </div>
 
-      <div className="row">
-        <div className="col-sm">
-          <small className="text-muted">
-            Total interest:
-            {formatCurrency(totalInterest)}
-          </small>
-        </div>
-      </div>
       <h2 className="text-secondary">Amortization</h2>
       <AmortizationGrid loanData={amortization} loanDataLabels={columnDefs} />
     </div>
@@ -139,10 +165,9 @@ const App = () => {
 
 const AmortizationGrid = ({ loanDataLabels, loanData }) => (
   <div
-    className="ag-theme-alpine"
+    className="ag-theme-balham"
     style={{
-      height: '650px',
-      width: '500px',
+      height: '150px',
     }}
   >
     <AgGridReact columnDefs={loanDataLabels} rowData={loanData} />

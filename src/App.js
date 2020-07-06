@@ -1,12 +1,12 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/jsx-filename-extension */
 import React, { useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
-
 import './App.css';
-
 import 'bootstrap/dist/css/bootstrap.css';
+import getLoanStats from './loan';
 
 const App = () => {
   const [loanAmount, setLoanAmount] = useState(100000);
@@ -15,7 +15,10 @@ const App = () => {
 
   function formatCurrency(val) {
     return val.toLocaleString('en-US', {
-      style: 'currency', currency: 'USD', maximumFractionDigits: 2, minimumFractionDigits: 2,
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 2,
     });
   }
   function currencyFormatter(params) {
@@ -24,23 +27,27 @@ const App = () => {
 
   const columnDefs = [
     {
-      headerName: 'Payment Number',
+      headerName: 'Payment #',
       field: 'paymentNumber',
+      width: 120,
     },
     {
       headerName: 'Principal',
       field: 'principal',
       valueFormatter: currencyFormatter,
+      width: 120,
     },
     {
       headerName: 'Interest',
       field: 'interest',
       valueFormatter: currencyFormatter,
+      width: 120,
     },
     {
-      headerName: 'Remaining Principal',
+      headerName: 'Remaining',
       field: 'remaining',
       valueFormatter: currencyFormatter,
+      width: 140,
     },
   ];
 
@@ -56,48 +63,15 @@ const App = () => {
     setRate(e.target.value);
   };
 
-  const _totalPayments = years * 12;
-
-  const _monthlyRate = rate / 1200;
-
-  const powerTerm = (monthlyRate, totalPayments) => (1 + monthlyRate) ** totalPayments;
-  const powerTermP = (monthlyRate, monthIndex) => (1 + monthlyRate) ** monthIndex;
-  const monthlyPayment = (loan, monthlyRate, totalPayments) => loan
-    * ((monthlyRate * powerTerm(monthlyRate, totalPayments))
-      / (powerTerm(monthlyRate, totalPayments) - 1));
-  const remainingAt = (loan, monthlyRate, monthIndex, totalPayments) => loan
-    * ((powerTerm(monthlyRate, totalPayments)
-      - powerTermP(monthlyRate, monthIndex))
-      / (powerTerm(monthlyRate, totalPayments) - 1));
-
-  const monthly = monthlyPayment(loanAmount, _monthlyRate, _totalPayments);
-  const amortization = [];
-
-  for (let i = 0; i < _totalPayments + 1; i += 1) {
-    amortization.push({
-      paymentNumber: i,
-      remaining: remainingAt(loanAmount, _monthlyRate, i, _totalPayments),
-    });
-  }
-
-  for (let i = 1; i < _totalPayments + 1; i += 1) {
-    const principal = amortization[i - 1].remaining - amortization[i].remaining;
-    const interest = monthly - principal;
-    amortization[i].principal = principal;
-    amortization[i].interest = interest;
-  }
-
-  const rowData = amortization.slice(1);
-  amortization[0].interest = 0;
-  amortization[0].principal = 0;
-  const sumInterest = (accumulator, currentValue) => accumulator + currentValue.interest;
-  const totalInterest = amortization.reduce(sumInterest, 0);
+  const { amortization, monthlyPayment, totalInterest } = getLoanStats(loanAmount, rate, years);
   return (
     <div className="container-fluid border border-secondary">
       <h1 className="text-info">Mortgage Fun</h1>
       <div className="form-group">
-      <h2 className="text-secondary">Terms</h2>
-        <label className="form-label" htmlFor="loan">Loan $</label>
+        <h2 className="text-secondary">Terms</h2>
+        <label className="form-label" htmlFor="loan">
+          Loan $
+        </label>
         <input
           className="form-control"
           id="loan"
@@ -110,7 +84,9 @@ const App = () => {
         />
       </div>
       <div className="form-group">
-        <label className="form-label" htmlFor="years">Years</label>
+        <label className="form-label" htmlFor="years">
+          Years
+        </label>
         <input
           className="form-control"
           id="years"
@@ -123,7 +99,9 @@ const App = () => {
         />
       </div>
       <div className="form-group">
-        <label className="form-label" htmlFor="interest">Interest Rate %</label>
+        <label className="form-label" htmlFor="interest">
+          Interest Rate %
+        </label>
         <input
           id="interest"
           name="interest"
@@ -140,7 +118,7 @@ const App = () => {
         <div className="col-sm">
           <small className="text-muted">
             Monthly payment:
-            { formatCurrency(monthly)}
+            {formatCurrency(monthlyPayment)}
           </small>
         </div>
       </div>
@@ -149,25 +127,25 @@ const App = () => {
         <div className="col-sm">
           <small className="text-muted">
             Total interest:
-            { formatCurrency(totalInterest)}
+            {formatCurrency(totalInterest)}
           </small>
         </div>
       </div>
       <h2 className="text-secondary">Amortization</h2>
-      <MyGrid rowData={rowData} columnDefs={columnDefs} />
+      <AmortizationGrid loanData={amortization} loanDataLabels={columnDefs} />
     </div>
   );
 };
 
-const MyGrid = ({ columnDefs, rowData }) => (
+const AmortizationGrid = ({ loanDataLabels, loanData }) => (
   <div
     className="ag-theme-alpine"
     style={{
       height: '650px',
-      width: '900px',
+      width: '500px',
     }}
   >
-    <AgGridReact columnDefs={columnDefs} rowData={rowData} />
+    <AgGridReact columnDefs={loanDataLabels} rowData={loanData} />
   </div>
 );
 

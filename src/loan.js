@@ -1,28 +1,48 @@
-const _loan = 100000;
-const _totalPayments = 360;
-const _rate = 0.05;
-const _monthlyRate = _rate / 12;
-const _monthIndex = 10;
+const getLoanStats = (principal, rate, years) => {
+  const totalPayments = years * 12;
+  const monthlyRate = rate / 1200;
+  const powerTerm = (monthlyPercentInt, paymentMonths) => (1 + monthlyPercentInt) ** paymentMonths;
+  const powerTermP = (monthlyPercentInt, monthIndex) => (1 + monthlyPercentInt) ** monthIndex;
 
-const powerTerm = (monthlyRate, totalPayments) => (1 + monthlyRate) ** totalPayments;
-const powerTermP = (monthlyRate, monthIndex) => (1 + monthlyRate) ** monthIndex;
-const monthlyPayment = (loan, monthlyRate, totalPayments) => loan * ((monthlyRate * powerTerm(monthlyRate, totalPayments)) / (powerTerm(monthlyRate, totalPayments) - 1));
+  // eslint-disable-next-line arrow-body-style
+  const calculateMonthlyPayment = (loan, monthlyPercentInt, paymentMonths) => {
+    return loan * ((monthlyPercentInt * powerTerm(monthlyPercentInt, paymentMonths))
+    / (powerTerm(monthlyPercentInt, paymentMonths) - 1));
+  };
 
-const remainingAt = (loan, monthlyRate, monthIndex, totalPayments) => loan * ((powerTerm(monthlyRate, totalPayments) - powerTermP(monthlyRate, monthIndex)) / (powerTerm(monthlyRate, totalPayments) - 1));
+  // eslint-disable-next-line arrow-body-style
+  const remainingAt = (loan, monthlyPercentInt, monthIndex, paymentMonths) => {
+    return loan * ((powerTerm(monthlyPercentInt, paymentMonths)
+      - powerTermP(monthlyPercentInt, monthIndex))
+      / (powerTerm(monthlyPercentInt, paymentMonths) - 1));
+  };
 
-const monthly = (monthlyPayment(_loan, _monthlyRate, _totalPayments));
+  const monthlyPayment = calculateMonthlyPayment(principal, monthlyRate, totalPayments);
+  const amortization = [];
 
+  for (let i = 0; i < totalPayments + 1; i += 1) {
+    amortization.push({
+      paymentNumber: i,
+      remaining: remainingAt(principal, monthlyRate, i, totalPayments),
+    });
+  }
 
-const remaining = [];
+  for (let i = 1; i < totalPayments + 1; i += 1) {
+    const monthlyPrincipal = amortization[i - 1].remaining - amortization[i].remaining;
+    const interest = monthlyPayment - monthlyPrincipal;
+    amortization[i].principal = monthlyPrincipal;
+    amortization[i].interest = interest;
+  }
 
-for (let i = 0; i < 361; i += 1) {
-  remaining.push({
-  remaining: (remainingAt(_loan, _monthlyRate, i, _totalPayments))
-  });
-}
+  amortization[0].interest = 0;
+  amortization[0].principal = 0;
+  const sumInterest = (acc, currentValue) => acc + currentValue.interest;
+  const totalInterest = amortization.reduce(sumInterest, 0);
+  return {
+    amortization: amortization.slice(1),
+    totalInterest,
+    monthlyPayment,
+  };
+};
 
-
-
-
-console.log(remaining);
-
+export default getLoanStats;

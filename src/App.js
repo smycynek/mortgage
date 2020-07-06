@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/jsx-filename-extension */
 import React, { useState } from 'react';
@@ -104,7 +105,7 @@ const App = () => {
       <div className="row">
         <div className="col">
           <label className="form-label" htmlFor="loan">
-            Loan Amount
+            Loan
           </label>
           <input
             className="form-control"
@@ -120,7 +121,7 @@ const App = () => {
         </div>
         <div className="col">
           <label className="form-label" htmlFor="years">
-            Loan Term Years
+            Years
           </label>
           <input
             className="form-control"
@@ -135,7 +136,7 @@ const App = () => {
         </div>
         <div className="col">
           <label className="form-label" htmlFor="interest">
-            Interest Rate
+            % Interest
           </label>
           <input
             id="interest"
@@ -162,6 +163,8 @@ const App = () => {
 
       <h2 className="text-secondary">Amortization</h2>
       <AmortizationGrid loanData={amortization} loanDataLabels={columnDefs} />
+      <hr />
+      <small><a href="https://github.com/smycynek/mortgage">https://github.com/smycynek/mortgage</a></small>
     </div>
   );
 };
@@ -170,7 +173,8 @@ const AmortizationGrid = ({ loanDataLabels, loanData }) => (
   <div
     className="ag-theme-balham"
     style={{
-      height: '150px',
+      height: '250px',
+      fontSize: 'smaller',
     }}
   >
     <AgGridReact columnDefs={loanDataLabels} rowData={loanData} />

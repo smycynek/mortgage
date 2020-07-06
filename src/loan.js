@@ -1,3 +1,4 @@
+// Not super-elegant, but I'll clean this up
 const getLoanStats = (principal, rate, years) => {
   const totalPayments = years * 12;
   const monthlyRate = rate / 1200;

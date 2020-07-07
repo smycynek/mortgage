@@ -78,7 +78,7 @@ const App = () => {
 
   const handleSetYears = (e) => {
     const val = e.target.value;
-    if (val < 0) {
+    if ((val < 0) || (val > 100)) {
       return;
     }
     setYears(val);
@@ -150,16 +150,21 @@ const App = () => {
           />
         </div>
       </div>
-      <h2 className="text-secondary">Summary</h2>
+      { (amortization.length > 0)
+      && (
+      <>
+        <h2 className="text-secondary">Summary</h2>
 
-      <div className="text-muted">
-        Monthly payment:
-        {formatCurrency(monthlyPayment)}
-      </div>
-      <div className="text-muted">
-        Total interest:
-        {formatCurrency(totalInterest)}
-      </div>
+        <div className="text-muted">
+          Monthly payment:
+          {formatCurrency(monthlyPayment)}
+        </div>
+        <div className="text-muted">
+          Total interest:
+          {formatCurrency(totalInterest)}
+        </div>
+      </>
+      )}
 
       <h2 className="text-secondary">Amortization</h2>
       <AmortizationGrid loanData={amortization} loanDataLabels={columnDefs} />

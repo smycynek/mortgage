@@ -1,10 +1,31 @@
 // Not super-elegant, but I'll clean this up
 const getLoanStats = (principal, rate, years) => {
   const totalPayments = years * 12;
-  const monthlyRate = rate / 1200;
+
   const powerTerm = (monthlyPercentInt, paymentMonths) => (1 + monthlyPercentInt) ** paymentMonths;
   const powerTermP = (monthlyPercentInt, monthIndex) => (1 + monthlyPercentInt) ** monthIndex;
 
+  if ((rate === '0') || (rate === '')) {
+    const amortization = [];
+    const monthlyPayment = principal / totalPayments;
+    const totalInterest = 0;
+    for (let i = 0; i < totalPayments + 1; i += 1) {
+      amortization.push(
+        {
+          interest: 0,
+          principal: monthlyPayment,
+          paymentNumber: `${i}/${totalPayments}`,
+          remaining: principal - monthlyPayment * i,
+        },
+      );
+    }
+    return {
+      amortization: amortization.slice(1),
+      totalInterest,
+      monthlyPayment,
+    };
+  }
+  const monthlyRate = rate / 1200;
   // eslint-disable-next-line arrow-body-style
   const calculateMonthlyPayment = (loan, monthlyPercentInt, paymentMonths) => {
     return loan * ((monthlyPercentInt * powerTerm(monthlyPercentInt, paymentMonths))

@@ -3,6 +3,8 @@
 /* eslint-disable react/jsx-filename-extension */
 import React, { useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
+import { Chart } from 'react-google-charts';
+import { Tab, Tabs } from 'react-bootstrap';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import './App.css';
@@ -92,16 +94,19 @@ const App = () => {
     setRate(val);
   };
 
-  const { amortization, monthlyPayment, totalInterest } = getLoanStats(
+  const {
+    amortization, monthlyPayment, totalInterest, percentEquity,
+  } = getLoanStats(
     loanAmount,
     rate,
     years,
   );
+
   return (
     <div className="container-fluid">
       <h1 className="text-info">Mortgage Fun</h1>
 
-      <h2 className="text-secondary">Terms</h2>
+      <h3 className="text-secondary">Terms</h3>
       <div className="row">
         <div className="col">
           <label className="form-label" htmlFor="loan">
@@ -153,7 +158,7 @@ const App = () => {
       { (amortization.length > 0)
       && (
       <>
-        <h2 className="text-secondary">Summary</h2>
+        <h3 className="text-secondary">Summary</h3>
 
         <div className="text-muted">
           Monthly payment:
@@ -166,8 +171,30 @@ const App = () => {
       </>
       )}
 
-      <h2 className="text-secondary">Amortization</h2>
-      <AmortizationGrid loanData={amortization} loanDataLabels={columnDefs} />
+      <h3 className="text-secondary">Statistics</h3>
+      <Tabs defaultActiveKey="amortization" id="uncontrolled-tab-example">
+        <Tab eventKey="amortization" title="Amortization">
+          <AmortizationGrid loanData={amortization} loanDataLabels={columnDefs} />
+        </Tab>
+        <Tab eventKey="efficiency" title="Efficiency">
+          <div className="my-pretty-chart-container">
+            <Chart
+              chartType="LineChart"
+              data={percentEquity}
+              options={{
+                hAxis: {
+                  title: 'Years',
+                },
+                vAxis: {
+                  title: 'Percent Equity',
+                },
+              }}
+            />
+          </div>
+        </Tab>
+
+      </Tabs>
+
       <hr />
       <small><a href="https://github.com/smycynek/mortgage">https://github.com/smycynek/mortgage</a></small>
     </div>
@@ -178,7 +205,7 @@ const AmortizationGrid = ({ loanDataLabels, loanData }) => (
   <div
     className="ag-theme-balham"
     style={{
-      height: '250px',
+      height: '230px',
       fontSize: 'smaller',
     }}
   >

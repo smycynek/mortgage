@@ -19,12 +19,15 @@ const getLoanStats = (principal, rate, years) => {
         },
       );
     }
+
     return {
+      percentEquity: 0,
       amortization: amortization.slice(1),
       totalInterest,
       monthlyPayment,
     };
   }
+
   const monthlyRate = rate / 1200;
   // eslint-disable-next-line arrow-body-style
   const calculateMonthlyPayment = (loan, monthlyPercentInt, paymentMonths) => {
@@ -60,10 +63,19 @@ const getLoanStats = (principal, rate, years) => {
   amortization[0].principal = 0;
   const sumInterest = (acc, currentValue) => acc + currentValue.interest;
   const totalInterest = amortization.reduce(sumInterest, 0);
+
+  const percentEquity = [['Year', '% Equity']];
+  for (let i = 0; i < totalPayments + 1; i += 1) {
+    percentEquity.push([i / 12,
+      100 * ((principal - amortization[i].remaining) / principal),
+    ]);
+  }
+
   return {
     amortization: amortization.slice(1),
     totalInterest,
     monthlyPayment,
+    percentEquity,
   };
 };
 

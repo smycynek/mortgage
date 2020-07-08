@@ -5,6 +5,8 @@ import React, { useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { Chart } from 'react-google-charts';
 import { Tab, Tabs } from 'react-bootstrap';
+import InputNumber from 'rc-input-number';
+import 'rc-input-number/assets/index.css';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import './App.css';
@@ -12,7 +14,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import getLoanStats from './loan';
 
 const LOAN_MIN = 40000.0;
-const LOAN_MAX = 999999.0;
+const LOAN_MAX = 9999999.0;
 const INTEREST_MIN = 1.0;
 const INTEREST_MAX = 10.0;
 
@@ -71,7 +73,7 @@ const App = () => {
   ];
 
   const handleSetLoan = (e) => {
-    const val = e.target.value;
+    const val = e;
     if (val < 0) {
       return;
     }
@@ -79,7 +81,7 @@ const App = () => {
   };
 
   const handleSetYears = (e) => {
-    const val = e.target.value;
+    const val = e;
     if ((val < 0) || (val > 100)) {
       return;
     }
@@ -87,7 +89,7 @@ const App = () => {
   };
 
   const handleSetRate = (e) => {
-    const val = e.target.value;
+    const val = e;
     if (val < 0) {
       return;
     }
@@ -106,72 +108,93 @@ const App = () => {
     <div className="container-fluid">
       <h1 className="text-info">Mortgage Fun</h1>
 
-      <h3 className="text-secondary">Terms</h3>
+      <h4 className="text-secondary">Terms</h4>
       <div className="row">
-        <div className="col">
-          <label className="form-label" htmlFor="loan">
-            Loan
-          </label>
-          <input
-            className="form-control"
+        <div className="col-5">Principal</div>
+        <div className="col-3">Years</div>
+        <div className="col-4">Interest</div>
+      </div>
+      <div className="row">
+        <div className="col-5">
+          <InputNumber
+            htmlFor="pc"
             id="loan"
             name="loan"
-            type="number"
+            step={10000}
+            formatter={(x) => `$${Number(x).toLocaleString('en-US')}`}
+            style={{
+              borderWidth: '2px',
+              borderColor: 'lightblue',
+              margin: 4,
+              padding: 5,
+
+              height: 40,
+            }}
             min={LOAN_MIN}
             max={LOAN_MAX}
             value={loanAmount}
             onChange={handleSetLoan}
           />
-
         </div>
-        <div className="col">
-          <label className="form-label" htmlFor="years">
-            Years
-          </label>
-          <input
-            className="form-control"
+        <div className="col-3">
+          <InputNumber
             id="years"
             name="years"
-            type="number"
             min={YEARS_MIN}
             max={YEARS_MAX}
             value={years}
+            step={5}
             onChange={handleSetYears}
+            style={{
+              borderWidth: '2px',
+              borderColor: 'lightblue',
+              margin: 4,
+              padding: 5,
+
+              height: 40,
+
+            }}
           />
         </div>
-        <div className="col">
-          <label className="form-label" htmlFor="interest">
-            % Interest
-          </label>
-          <input
+        <div className="col-4">
+          <InputNumber
             id="interest"
             name="interest"
-            className="form-control"
-            type="number"
+            step={0.05}
+            formatter={(x) => `${x}%`}
             min={INTEREST_MIN}
             max={INTEREST_MAX}
             value={rate}
             onChange={handleSetRate}
+            style={{
+              borderWidth: '2px',
+              borderColor: 'lightblue',
+              margin: 4,
+              padding: 5,
+
+              height: 40,
+
+            }}
           />
         </div>
       </div>
       { (amortization.length > 0)
       && (
       <>
-        <h3 className="text-secondary">Summary</h3>
+        <h4 className="text-secondary">Summary</h4>
 
         <div className="text-muted">
           Monthly payment:
-          {formatCurrency(monthlyPayment)}
+          <b>{formatCurrency(monthlyPayment)}</b>
         </div>
         <div className="text-muted">
           Total interest:
-          {formatCurrency(totalInterest)}
+          <b>{formatCurrency(totalInterest)}</b>
         </div>
       </>
       )}
 
-      <h3 className="text-secondary">Statistics</h3>
+      <h4 className="text-secondary">Statistics</h4>
       <Tabs defaultActiveKey="amortization" id="uncontrolled-tab-example">
         <Tab eventKey="amortization" title="Amortization">
           <AmortizationGrid loanData={amortization} loanDataLabels={columnDefs} />
@@ -186,7 +209,7 @@ const App = () => {
                   title: 'Years',
                 },
                 vAxis: {
-                  title: 'Percent Equity',
+                  title: 'Percent Paid',
                 },
               }}
             />
@@ -205,7 +228,7 @@ const AmortizationGrid = ({ loanDataLabels, loanData }) => (
   <div
     className="ag-theme-balham"
     style={{
-      height: '230px',
+      height: '210px',
       fontSize: 'smaller',
     }}
   >

@@ -11,6 +11,7 @@
     "ag-grid-community": "^23.2.1",
     "ag-grid-react": "^23.2.1",
     "bootstrap": "^4.5.0",
+    "rc-input-number": "^5.1.0",
     "react": "^16.13.1",
     "react-bootstrap": "^1.1.1",
     "react-dom": "^16.13.1",

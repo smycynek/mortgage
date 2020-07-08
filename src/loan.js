@@ -64,7 +64,7 @@ const getLoanStats = (principal, rate, years) => {
   const sumInterest = (acc, currentValue) => acc + currentValue.interest;
   const totalInterest = amortization.reduce(sumInterest, 0);
 
-  const percentEquity = [['Year', '% Equity']];
+  const percentEquity = [['Year', '% Paid']];
   for (let i = 0; i < totalPayments + 1; i += 1) {
     percentEquity.push([i / 12,
       100 * ((principal - amortization[i].remaining) / principal),

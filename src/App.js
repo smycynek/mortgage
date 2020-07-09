@@ -6,11 +6,13 @@ import { AgGridReact } from 'ag-grid-react';
 import { Chart } from 'react-google-charts';
 import { Tab, Tabs } from 'react-bootstrap';
 import InputNumber from 'rc-input-number';
+import styled from 'styled-components';
 import 'rc-input-number/assets/index.css';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
-import './App.css';
+
 import 'bootstrap/dist/css/bootstrap.css';
+import './App.css';
 import getLoanStats from './loan';
 
 const LOAN_MIN = 40000.0;
@@ -20,6 +22,19 @@ const INTEREST_MAX = 10.0;
 
 const YEARS_MIN = 3;
 const YEARS_MAX = 40;
+
+const TitleHeading = styled.h1`
+  font-size: 1.6em;
+`;
+const SubHeading = styled.h2`
+  margin-top: 1.2em;
+  margin-bottom: 0.2em;
+  font-size: 1.4em;
+`;
+
+const BoldSummary = styled.span`
+  font-weight: bold
+`;
 
 const App = () => {
   const [loanAmount, setLoanAmount] = useState(400000.0);
@@ -105,29 +120,27 @@ const App = () => {
   );
 
   return (
-    <div className="container-fluid">
-      <h1 className="text-info">Mortgage Fun</h1>
+    <div className="container-fluid" role="main">
+      <TitleHeading className="text-primary">Mortgage Fun</TitleHeading>
 
-      <h4 className="text-secondary">Terms</h4>
+      <SubHeading className="text-secondary">Terms</SubHeading>
       <div className="row">
-        <div className="col-5">Principal</div>
-        <div className="col-3">Years</div>
-        <div className="col-4">Interest</div>
+        <div className="col-5"><label htmlFor="loan">Principal</label></div>
+        <div className="col-3"><label htmlFor="years">Years</label></div>
+        <div className="col-4"><label htmlFor="interest">Interest</label></div>
       </div>
       <div className="row">
         <div className="col-5">
           <InputNumber
-            htmlFor="pc"
             id="loan"
             name="loan"
             step={10000}
             formatter={(x) => `$${Number(x).toLocaleString('en-US')}`}
             style={{
               borderWidth: '2px',
-              borderColor: 'lightblue',
-              margin: 4,
-              padding: 5,
-
+              borderColor: '#0275d8',
+              margin: 2,
+              padding: 2,
               height: 40,
             }}
             min={LOAN_MIN}
@@ -147,9 +160,9 @@ const App = () => {
             onChange={handleSetYears}
             style={{
               borderWidth: '2px',
-              borderColor: 'lightblue',
-              margin: 4,
-              padding: 5,
+              borderColor: '#0275d8',
+              margin: 2,
+              padding: 2,
 
               height: 40,
 
@@ -168,9 +181,9 @@ const App = () => {
             onChange={handleSetRate}
             style={{
               borderWidth: '2px',
-              borderColor: 'lightblue',
-              margin: 4,
-              padding: 5,
+              borderColor: '#0275d8',
+              margin: 2,
+              padding: 2,
 
               height: 40,
 
@@ -181,20 +194,21 @@ const App = () => {
       { (amortization.length > 0)
       && (
       <>
-        <h4 className="text-secondary">Summary</h4>
+        <SubHeading className="text-secondary">Summary</SubHeading>
 
         <div className="text-muted">
           Monthly payment:
-          <b>{formatCurrency(monthlyPayment)}</b>
+          <BoldSummary>{formatCurrency(monthlyPayment)}</BoldSummary>
         </div>
         <div className="text-muted">
           Total interest:
-          <b>{formatCurrency(totalInterest)}</b>
+          <BoldSummary>{formatCurrency(totalInterest)}</BoldSummary>
         </div>
+
       </>
       )}
 
-      <h4 className="text-secondary">Statistics</h4>
+      <SubHeading className="text-secondary">Statistics</SubHeading>
       <Tabs defaultActiveKey="amortization" id="uncontrolled-tab-example">
         <Tab eventKey="amortization" title="Amortization">
           <AmortizationGrid loanData={amortization} loanDataLabels={columnDefs} />
@@ -205,11 +219,24 @@ const App = () => {
               chartType="LineChart"
               data={percentEquity}
               options={{
+                legend: 'none',
                 hAxis: {
                   title: 'Years',
+                  titleTextStyle: {
+                    fontSize: 20,
+                    italic: false,
+                    fontName: 'Helvetica Neue',
+                    fontColor: 'ddd',
+                  },
                 },
                 vAxis: {
                   title: 'Percent Paid',
+                  titleTextStyle: {
+                    fontSize: 20,
+                    italic: false,
+                    fontName: 'Helvetica Neue',
+                    fontColor: 'ddd',
+                  },
                 },
               }}
             />
@@ -228,7 +255,7 @@ const AmortizationGrid = ({ loanDataLabels, loanData }) => (
   <div
     className="ag-theme-balham"
     style={{
-      height: '210px',
+      height: '200px',
       fontSize: 'smaller',
     }}
   >

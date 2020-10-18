@@ -41,6 +41,9 @@ const App = () => {
   const [years, setYears] = useState(30);
   const [rate, setRate] = useState(3.1);
 
+  const [, updateState] = React.useState();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
+
   function formatCurrency(val) {
     return val.toLocaleString('en-US', {
       style: 'currency',
@@ -124,19 +127,16 @@ const App = () => {
       <TitleHeading className="text-primary">Mortgage Fun</TitleHeading>
 
       <SubHeading className="text-secondary">Terms</SubHeading>
-      <div className="row">
-        <div className="col-5"><label htmlFor="loan">Principal</label></div>
-        <div className="col-3"><label htmlFor="years">Years</label></div>
-        <div className="col-4"><label htmlFor="interest">Interest</label></div>
-      </div>
-      <div className="row">
-        <div className="col-5">
+      <div style={{ display: 'flex' }}>
+        <div>
+          <label className="text-secondary" style={{ display: 'block', fontWeight: 600 }} htmlFor="loan">Principal</label>
           <InputNumber
             id="loan"
             name="loan"
             step={10000}
             formatter={(x) => `$${Number(x).toLocaleString('en-US')}`}
             style={{
+              display: 'block',
               borderWidth: '2px',
               borderColor: '#0275d8',
               margin: 2,
@@ -149,7 +149,8 @@ const App = () => {
             onChange={handleSetLoan}
           />
         </div>
-        <div className="col-3">
+        <div>
+          <label className="text-secondary" style={{ display: 'block', fontWeight: 600 }} htmlFor="years">Years</label>
           <InputNumber
             id="years"
             name="years"
@@ -159,6 +160,7 @@ const App = () => {
             step={5}
             onChange={handleSetYears}
             style={{
+              display: 'block',
               borderWidth: '2px',
               borderColor: '#0275d8',
               margin: 2,
@@ -169,7 +171,8 @@ const App = () => {
             }}
           />
         </div>
-        <div className="col-4">
+        <div>
+          <label className="text-secondary" style={{ display: 'block', fontWeight: 600 }} htmlFor="interest">Interest</label>
           <InputNumber
             id="interest"
             name="interest"
@@ -180,6 +183,7 @@ const App = () => {
             value={rate}
             onChange={handleSetRate}
             style={{
+              display: 'block',
               borderWidth: '2px',
               borderColor: '#0275d8',
               margin: 2,
@@ -209,13 +213,14 @@ const App = () => {
       )}
 
       <SubHeading className="text-secondary">Statistics</SubHeading>
-      <Tabs defaultActiveKey="amortization" id="uncontrolled-tab-example">
+      <Tabs onSelect={forceUpdate} defaultActiveKey="amortization" id="uncontrolled-tab-example">
         <Tab eventKey="amortization" title="Amortization">
           <AmortizationGrid loanData={amortization} loanDataLabels={columnDefs} />
         </Tab>
         <Tab eventKey="efficiency" title="Efficiency">
-          <div className="my-pretty-chart-container">
+          <div width="100%">
             <Chart
+              width="100%"
               chartType="LineChart"
               data={percentEquity}
               options={{
